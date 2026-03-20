@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, CheckCircle2, Image as ImageIcon, MapPin, Type } from 'lucide-react';
+import { Calendar, CheckCircle2, Image as ImageIcon, MapPin, Type, Smartphone } from 'lucide-react';
 
 // Dados do planejamento
 const planejamento = [
@@ -94,9 +94,9 @@ const planejamento = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState<number | 'stories'>(1);
 
-  const postsFiltrados = planejamento.filter(post => post.semana === activeTab);
+  const postsFiltrados = typeof activeTab === 'number' ? planejamento.filter(post => post.semana === activeTab) : [];
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans text-gray-900 pb-12">
@@ -132,6 +132,10 @@ export default function App() {
               <Calendar className="w-4 h-4 text-[#A78BFA]" />
               3 Posts por Semana
             </div>
+            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm border border-white/20">
+              <Smartphone className="w-4 h-4 text-[#A78BFA]" />
+              2 Comunicados (Stories)
+            </div>
           </div>
         </section>
 
@@ -152,50 +156,124 @@ export default function App() {
                 Semana {semana}
               </button>
             ))}
+            <button
+              onClick={() => setActiveTab('stories')}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'stories'
+                  ? 'bg-[#5B21B6] text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-[#5B21B6]'
+              }`}
+            >
+              <Smartphone className="w-4 h-4" />
+              Stories (Comunicados)
+            </button>
           </nav>
         </div>
 
-        {/* Post Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {postsFiltrados.map((post) => (
-            <article key={post.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-              {/* Card Header */}
-              <div className="bg-[#4C1D95] px-5 py-3 flex justify-between items-center">
-                <span className="text-white font-bold text-sm tracking-wide">POST {post.id < 10 ? `0${post.id}` : post.id}</span>
-                <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider">Feed</span>
-              </div>
+        {/* Post Grid (Feed) */}
+        {typeof activeTab === 'number' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {postsFiltrados.map((post) => (
+              <article key={post.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                {/* Card Header */}
+                <div className="bg-[#4C1D95] px-5 py-3 flex justify-between items-center">
+                  <span className="text-white font-bold text-sm tracking-wide">POST {post.id < 10 ? `0${post.id}` : post.id}</span>
+                  <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider">Feed</span>
+                </div>
+                
+                {/* Card Body */}
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-lg font-bold text-gray-900 mb-5 leading-snug">
+                    {post.headline}
+                  </h3>
+                  
+                  {/* Direcionamento de Arte */}
+                  <div className="bg-[#F5F3FF] border border-[#EDE9FE] rounded-lg p-4 mb-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ImageIcon className="w-4 h-4 text-[#6D28D9]" />
+                      <h4 className="text-sm font-bold text-[#6D28D9]">Direcionamento de Arte</h4>
+                    </div>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {post.arte}
+                    </p>
+                  </div>
+                  
+                  {/* Legenda */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Type className="w-4 h-4 text-[#4C1D95]" />
+                      <h4 className="text-sm font-bold text-[#4C1D95]">Legenda</h4>
+                    </div>
+                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                      {post.legenda}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {/* Stories View */}
+        {activeTab === 'stories' && (
+          <div className="flex flex-col md:flex-row justify-center items-center gap-12 py-8">
+            {/* Story 1: Sexta-feira Santa */}
+            <div className="relative w-[320px] h-[640px] bg-[#2E1065] rounded-[2.5rem] p-4 shadow-2xl border-[8px] border-gray-900 flex flex-col overflow-hidden">
+              {/* Pattern Background */}
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '20px 20px' }}></div>
               
-              {/* Card Body */}
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-lg font-bold text-gray-900 mb-5 leading-snug">
-                  {post.headline}
-                </h3>
-                
-                {/* Direcionamento de Arte */}
-                <div className="bg-[#F5F3FF] border border-[#EDE9FE] rounded-lg p-4 mb-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <ImageIcon className="w-4 h-4 text-[#6D28D9]" />
-                    <h4 className="text-sm font-bold text-[#6D28D9]">Direcionamento de Arte</h4>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {post.arte}
-                  </p>
+              <div className="relative z-10 flex flex-col h-full justify-center items-center text-center px-6">
+                <div className="bg-[#5B21B6] text-white font-black text-2xl tracking-widest py-3 px-8 rounded-lg mb-2 shadow-lg w-full border border-[#7C3AED]">
+                  ATENÇÃO
                 </div>
+                <h3 className="text-white font-bold text-xl tracking-widest mb-12">CLIENTES</h3>
                 
-                {/* Legenda */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Type className="w-4 h-4 text-[#4C1D95]" />
-                    <h4 className="text-sm font-bold text-[#4C1D95]">Legenda</h4>
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                    {post.legenda}
-                  </p>
-                </div>
+                <p className="text-white/90 text-[15px] leading-relaxed font-medium mb-8">
+                  Informamos que no dia<br/>
+                  <strong className="text-white">03 de Abril</strong>, não haverá<br/>
+                  atendimento administrativo<br/>
+                  em razão do Feriado de<br/>
+                  Sexta-feira Santa.
+                </p>
+                
+                <p className="text-white/90 text-[15px] leading-relaxed font-medium">
+                  Informamos que a nossa<br/>
+                  Assistência 24h seguirá<br/>
+                  operando normalmente<br/>
+                  para atender você!
+                </p>
               </div>
-            </article>
-          ))}
-        </div>
+            </div>
+
+            {/* Story 2: Tiradentes */}
+            <div className="relative w-[320px] h-[640px] bg-[#2E1065] rounded-[2.5rem] p-4 shadow-2xl border-[8px] border-gray-900 flex flex-col overflow-hidden">
+              {/* Pattern Background */}
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '20px 20px' }}></div>
+              
+              <div className="relative z-10 flex flex-col h-full justify-center items-center text-center px-6">
+                <div className="bg-[#5B21B6] text-white font-black text-2xl tracking-widest py-3 px-8 rounded-lg mb-2 shadow-lg w-full border border-[#7C3AED]">
+                  ATENÇÃO
+                </div>
+                <h3 className="text-white font-bold text-xl tracking-widest mb-12">CLIENTES</h3>
+                
+                <p className="text-white/90 text-[15px] leading-relaxed font-medium mb-8">
+                  Informamos que no dia<br/>
+                  <strong className="text-white">21 de Abril</strong>, não haverá<br/>
+                  atendimento administrativo<br/>
+                  em razão do Feriado de<br/>
+                  Tiradentes.
+                </p>
+                
+                <p className="text-white/90 text-[15px] leading-relaxed font-medium">
+                  Informamos que a nossa<br/>
+                  Assistência 24h seguirá<br/>
+                  operando normalmente<br/>
+                  para atender você!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
